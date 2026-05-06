@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Crusoe SEO Dashboard — Screaming Frog</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <style>
   :root {
     --lime: #CEEB13;
@@ -35,7 +36,8 @@
   /* Tabs */
   .tabs-bar { display: flex; gap: 2px; padding: 0 32px; background: #000; border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; }
   .tabs-bar::-webkit-scrollbar { display: none; }
-  .tab-btn { padding: 13px 16px; font-size: 12px; font-weight: 500; color: var(--muted); background: none; border: none; cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; transition: all 0.15s; }
+  .tab-btn { display: flex; align-items: center; gap: 7px; padding: 13px 16px; font-size: 12px; font-weight: 500; color: var(--muted); background: none; border: none; cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; transition: all 0.15s; }
+  .tab-btn svg { width: 14px; height: 14px; stroke: currentColor; flex-shrink: 0; }
   .tab-btn:hover { color: var(--text); }
   .tab-btn.active { color: var(--lime); border-bottom-color: var(--lime); }
 
@@ -113,16 +115,16 @@
 </div>
 
 <div class="tabs-bar">
-  <button class="tab-btn active" data-tab="summary">🏠 Summary</button>
-  <button class="tab-btn" data-tab="response-codes">🔗 Response Codes</button>
-  <button class="tab-btn" data-tab="url-types">🔗 URL Types</button>
-  <button class="tab-btn" data-tab="indexability">🚫 Indexability</button>
-  <button class="tab-btn" data-tab="site-structure">🏗️ Site Structure</button>
-  <button class="tab-btn" data-tab="on-page">📄 On-Page</button>
-  <button class="tab-btn" data-tab="content-issues">📕 Content Issues</button>
-  <button class="tab-btn" data-tab="structured-data">💻 Structured Data</button>
-  <button class="tab-btn" data-tab="security">🔒 Security</button>
-  <button class="tab-btn" data-tab="sitemaps">🗺️ Sitemaps</button>
+  <button class="tab-btn active" data-tab="summary"><i data-lucide="layout-dashboard"></i> Summary</button>
+  <button class="tab-btn" data-tab="response-codes"><i data-lucide="activity"></i> Response Codes</button>
+  <button class="tab-btn" data-tab="url-types"><i data-lucide="layers"></i> URL Types</button>
+  <button class="tab-btn" data-tab="indexability"><i data-lucide="eye"></i> Indexability</button>
+  <button class="tab-btn" data-tab="site-structure"><i data-lucide="git-branch"></i> Site Structure</button>
+  <button class="tab-btn" data-tab="on-page"><i data-lucide="file-text"></i> On-Page</button>
+  <button class="tab-btn" data-tab="content-issues"><i data-lucide="alert-triangle"></i> Content Issues</button>
+  <button class="tab-btn" data-tab="structured-data"><i data-lucide="code-2"></i> Structured Data</button>
+  <button class="tab-btn" data-tab="security"><i data-lucide="shield"></i> Security</button>
+  <button class="tab-btn" data-tab="sitemaps"><i data-lucide="map"></i> Sitemaps</button>
 </div>
 
 <div class="content">
@@ -807,6 +809,7 @@ async function init() {
 }
 
 window.filterTable = filterTable;
+lucide.createIcons();
 init().catch(e => {
   document.getElementById('global-loading').innerHTML = `<div style="color:var(--red)">Error loading data: ${e.message}</div>`;
 });
