@@ -630,7 +630,8 @@ function _refreshTable(id) {
     visible.sort((a, b) => {
       const aT = a.cells[state.sortCol]?.textContent.trim() || '';
       const bT = b.cells[state.sortCol]?.textContent.trim() || '';
-      const aN = parseFloat(aT), bN = parseFloat(bT);
+      // Strip thousand-separator commas before numeric parse
+      const aN = parseFloat(aT.replace(/,/g, '')), bN = parseFloat(bT.replace(/,/g, ''));
       if (!isNaN(aN) && !isNaN(bN)) return (aN - bN) * state.sortDir;
       return aT.localeCompare(bT) * state.sortDir;
     });
@@ -902,7 +903,7 @@ async function init() {
       backgroundColor: BLUE+'88', borderColor: BLUE, borderWidth:1 }]
   }, options: { plugins:{legend:{display:false}}, scales:{x:{grid:{color:'#222'}},y:{grid:{color:'#222'}}} } });
 
-  const topLinked = [...internal].sort((a,b)=>(b.Inlinks||0)-(a.Inlinks||0)).slice(0,20);
+  const topLinked = [...internal].sort((a,b)=>(+b.Inlinks||0)-(+a.Inlinks||0)).slice(0,20);
   buildTable(document.querySelector('#ss-table'), ['URL','Inlinks','Unique Inlinks','Crawl Depth','Status'],
     topLinked, r => `<tr>
       <td title="${r.Address}">${r.Address}</td>
