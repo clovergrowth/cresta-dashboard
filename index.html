@@ -280,7 +280,6 @@
     <div class="sidebar-section-label">Reports</div>
     <button class="tab-btn active" data-tab="summary"><i data-lucide="layout-dashboard"></i> Summary</button>
     <button class="tab-btn" data-tab="response-codes"><i data-lucide="activity"></i> Response Codes</button>
-    <button class="tab-btn" data-tab="url-types"><i data-lucide="layers"></i> URL Types</button>
     <button class="tab-btn" data-tab="indexability"><i data-lucide="eye"></i> Indexability</button>
     <button class="tab-btn" data-tab="site-structure"><i data-lucide="git-branch"></i> Site Structure</button>
   </div>
@@ -338,12 +337,6 @@
       <div class="table-header">All URLs <input class="table-search" id="rc-search" placeholder="Filter URLs…" oninput="filterTable('rc-table', this.value)"></div>
       <div class="table-wrap"><table id="rc-table"></table></div>
     </div>
-  </div>
-
-  <!-- URL TYPES -->
-  <div class="tab-panel" id="panel-url-types">
-    <div class="section-head"><h2>URL Types</h2><p>Resource type breakdown across all internal URLs</p></div>
-    <div class="charts-grid" id="ut-charts"></div>
   </div>
 
   <!-- INDEXABILITY -->
@@ -672,24 +665,6 @@ async function init() {
     const ct = r['Content Type'] || '';
     return !ct.includes('html') && !ct.startsWith('image/') && !ct.includes('css') && !ct.includes('javascript') && !ct.includes('pdf');
   });
-
-  document.getElementById('ut-charts').innerHTML = [
-    chartCard('chart-ut-overview', 'Resource Type Overview'),
-    chartCard('chart-ut-images', 'Image Types'),
-  ].join('');
-
-  makeChart('chart-ut-overview', { type: 'bar', data: {
-    labels: ['HTML', 'Images', 'CSS', 'JavaScript', 'PDF', 'Other'],
-    datasets: [{ label: 'URLs', data: [htmlUrls.length, imgUrls.length, cssUrls.length, jsUrls.length, pdfUrls.length, otherUrls.length],
-      backgroundColor: [LIME+'99', RED+'99', ORANGE+'99', GREEN+'99', PURPLE+'99', BLUE+'99'],
-      borderColor: [LIME, RED, ORANGE, GREEN, PURPLE, BLUE], borderWidth: 1 }]
-  }, options: { plugins: {legend:{display:false}}, scales:{x:{grid:{color:'#222'}},y:{grid:{color:'#222'}}} } });
-
-  const imgTypeMap = countBy(imgUrls, 'Content Type');
-  makeChart('chart-ut-images', { type: 'doughnut', data: {
-    labels: Object.keys(imgTypeMap), datasets: [{ data: Object.values(imgTypeMap),
-      backgroundColor: [RED, ORANGE, PURPLE, BLUE, GREEN].slice(0, Object.keys(imgTypeMap).length), borderWidth:2, borderColor:'#111' }]
-  }, options: { plugins:{legend:{position:'bottom'}}, cutout:'60%' } });
 
   // ── INDEXABILITY ──
   const idxStatusMap = countBy(internal.filter(r=>r['Indexability']==='Non-Indexable'), 'Indexability Status');
@@ -1032,7 +1007,7 @@ document.getElementById('cache-clear-btn').addEventListener('click', () => {
 
 // Update topbar title on tab switch
 const TITLES = {
-  'summary': 'Summary', 'response-codes': 'Response Codes', 'url-types': 'URL Types',
+  'summary': 'Summary', 'response-codes': 'Response Codes',
   'indexability': 'Indexability', 'site-structure': 'Site Structure', 'on-page': 'On-Page Elements',
   'content-issues': 'Content Issues', 'structured-data': 'Structured Data',
   'security': 'Security', 'sitemaps': 'Sitemaps'
