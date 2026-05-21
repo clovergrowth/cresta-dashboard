@@ -916,22 +916,22 @@ async function init() {
 
   // ── ON-PAGE ──
   const htmlOnly = internal.filter(r=>(r['Content Type']||'').includes('html') && r['Status Code'] === 200);
-  const titleMissing   = htmlOnly.filter(r=>!r['Title 1']||r['Title 1 Length']===0).length;
-  const titleLong      = htmlOnly.filter(r=>(r['Title 1 Length']||0)>60).length;
-  const titleShort     = htmlOnly.filter(r=>(r['Title 1 Length']||0)>0&&(r['Title 1 Length']||0)<30).length;
-  const metaMissing    = htmlOnly.filter(r=>!r['Meta Description 1']||r['Meta Description 1 Length']===0).length;
-  const metaLong       = htmlOnly.filter(r=>(r['Meta Description 1 Length']||0)>160).length;
-  const metaShort      = htmlOnly.filter(r=>(r['Meta Description 1 Length']||0)>0&&(r['Meta Description 1 Length']||0)<70).length;
-  const h1Missing      = htmlOnly.filter(r=>!r['H1-1']||r['H1-1 Length']===0).length;
-  const h1Multiple     = htmlOnly.filter(r=>r['H1-2']&&r['H1-2 Length']>0).length;
+  const titleMissing   = pageTitles.filter(r=>!r['Title']||r['Title Length']===0).length;
+  const titleLong      = pageTitles.filter(r=>(r['Title Length']||0)>60).length;
+  const titleShort     = pageTitles.filter(r=>(r['Title Length']||0)>0&&(r['Title Length']||0)<30).length;
+  const metaMissing    = metaDesc.filter(r=>!r['Meta Description']||r['Length']===0).length;
+  const metaLong       = metaDesc.filter(r=>(r['Length']||0)>160).length;
+  const metaShort      = metaDesc.filter(r=>(r['Length']||0)>0&&(r['Length']||0)<70).length;
+  const h1Missing      = h1.filter(r=>!r['H1-1']||r['H1-1 Length']===0).length;
+  const h1Multiple     = h1.filter(r=>r['H1-2']&&r['H1-2 Length']>0).length;
 
   document.getElementById('op-scorecards').innerHTML = [
-    scorecard('Missing Titles', fmt(titleMissing), titleMissing>0?'red':'', 'of ' + htmlOnly.length + ' HTML pages'),
+    scorecard('Missing Titles', fmt(titleMissing), titleMissing>0?'red':'', 'of ' + pageTitles.length + ' pages'),
     scorecard('Long Titles', fmt(titleLong), titleLong>0?'orange':'', '>60 chars'),
     scorecard('Short Titles', fmt(titleShort), titleShort>0?'orange':'', '<30 chars'),
-    scorecard('Missing Meta Desc', fmt(metaMissing), metaMissing>0?'red':'', 'of ' + htmlOnly.length + ' HTML pages'),
+    scorecard('Missing Meta Desc', fmt(metaMissing), metaMissing>0?'red':'', 'of ' + metaDesc.length + ' pages'),
     scorecard('Long Meta Desc', fmt(metaLong), metaLong>0?'orange':'', '>160 chars'),
-    scorecard('Missing H1', fmt(h1Missing), h1Missing>0?'red':'', 'of ' + htmlOnly.length + ' HTML pages'),
+    scorecard('Missing H1', fmt(h1Missing), h1Missing>0?'red':'', 'of ' + h1.length + ' pages'),
     scorecard('Multiple H1', fmt(h1Multiple), h1Multiple>0?'orange':'', 'Has H1-2 set'),
   ].join('');
 
@@ -944,26 +944,26 @@ async function init() {
 
   makeChart('chart-op-titles', { type: 'doughnut', data: {
     labels: ['OK', 'Missing', 'Too Long', 'Too Short'],
-    datasets: [{ data: [htmlOnly.length-titleMissing-titleLong-titleShort, titleMissing, titleLong, titleShort],
+    datasets: [{ data: [pageTitles.length-titleMissing-titleLong-titleShort, titleMissing, titleLong, titleShort],
       backgroundColor: [LIME, RED, ORANGE, BLUE], borderWidth:2, borderColor:'#111' }]
   }, options: { plugins:{legend:{position:'bottom'}}, cutout:'60%' } });
 
   makeChart('chart-op-meta', { type: 'doughnut', data: {
     labels: ['OK', 'Missing', 'Too Long', 'Too Short'],
-    datasets: [{ data: [htmlOnly.length-metaMissing-metaLong-metaShort, metaMissing, metaLong, metaShort],
+    datasets: [{ data: [metaDesc.length-metaMissing-metaLong-metaShort, metaMissing, metaLong, metaShort],
       backgroundColor: [LIME, RED, ORANGE, BLUE], borderWidth:2, borderColor:'#111' }]
   }, options: { plugins:{legend:{position:'bottom'}}, cutout:'60%' } });
 
   makeChart('chart-op-h1', { type: 'doughnut', data: {
     labels: ['Single H1', 'Missing H1', 'Multiple H1'],
-    datasets: [{ data: [htmlOnly.length-h1Missing-h1Multiple, h1Missing, h1Multiple],
+    datasets: [{ data: [h1.length-h1Missing-h1Multiple, h1Missing, h1Multiple],
       backgroundColor: [LIME, RED, ORANGE], borderWidth:2, borderColor:'#111' }]
   }, options: { plugins:{legend:{position:'bottom'}}, cutout:'60%' } });
 
   // Title length buckets
   const lenBuckets = {'0': 0, '1-30': 0, '31-60': 0, '61-70': 0, '71+': 0};
-  htmlOnly.forEach(r => {
-    const l = r['Title 1 Length'] || 0;
+  pageTitles.forEach(r => {
+    const l = r['Title Length'] || 0;
     if(l===0) lenBuckets['0']++;
     else if(l<=30) lenBuckets['1-30']++;
     else if(l<=60) lenBuckets['31-60']++;
@@ -979,8 +979,8 @@ async function init() {
   buildTable(document.querySelector('#pt-table'), ['URL','Title','Length','Indexable'],
     pageTitles, r => `<tr>
       <td title="${r.Address}">${r.Address}</td>
-      <td title="${r['Title 1']||''}">${r['Title 1']||badge('Missing','red')}</td>
-      <td>${r['Title 1 Length']||0}</td>
+      <td title="${r['Title']||''}">${r['Title']||badge('Missing','red')}</td>
+      <td>${r['Title Length']||0}</td>
       <td>${r.Indexability==='Indexable'?badge('Yes','green'):badge('No','red')}</td>
     </tr>`);
   addOptionsFilter('pt-table', 'Title Issues', [
@@ -993,8 +993,8 @@ async function init() {
   buildTable(document.querySelector('#md-table'), ['URL','Meta Description','Length','Indexable'],
     metaDesc, r => `<tr>
       <td title="${r.Address}">${r.Address}</td>
-      <td title="${r['Meta Description 1']||''}">${r['Meta Description 1']||badge('Missing','red')}</td>
-      <td>${r['Meta Description 1 Length']||0}</td>
+      <td title="${r['Meta Description']||''}">${r['Meta Description']||badge('Missing','red')}</td>
+      <td>${r['Length']||0}</td>
       <td>${r.Indexability==='Indexable'?badge('Yes','green'):badge('No','red')}</td>
     </tr>`);
   addOptionsFilter('md-table', 'Meta Issues', [
